@@ -1,6 +1,6 @@
 # Admin Dashboard
 
-A modern, responsive admin dashboard built with **Next.js**, **React**, **Tailwind CSS**, and **shadcn/ui**. It provides a clean interface for managing website pages and content.
+A modern, responsive admin dashboard built with **Next.js**, **React**, **Tailwind CSS**, and **shadcn/ui**. It provides a clean interface for managing content.
 
 
 ## Preview
