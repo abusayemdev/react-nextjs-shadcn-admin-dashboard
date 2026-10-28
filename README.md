@@ -3,13 +3,10 @@
 A modern, responsive admin dashboard built with **Next.js**, **React**, **Tailwind CSS**, and **shadcn/ui**. It provides a clean interface for managing website pages and content.
 
 
-## Preview: Light Mode
+## Preview
 
 ![Admin Dashboard --- Light Mode](./public/dashboard-light.png)
 
-## Preview: Dark Mode
-
-![Admin Dashboard --- Dark Mode](./public/dashboard-dark.png)
 
 
 ## Tech Stack
