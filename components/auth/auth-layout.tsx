@@ -4,6 +4,8 @@ import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import LoginForm from "./login-form";
 import RegisterForm from "./register-form";
+import { Button } from "../ui/button";
+import Link from "next/link";
 
 function AuthLayout() {
   const [activeTab, setActiveTab] = useState("login");
@@ -24,6 +26,10 @@ function AuthLayout() {
             <RegisterForm onSuccess={() => setActiveTab("login")} />
           </TabsContent>
         </Tabs>
+
+        <div className="flex justify-center my-2">
+          <Button variant="link" render={<Link href="/">Back to Site</Link>} />
+        </div>
       </div>
     </div>
   );

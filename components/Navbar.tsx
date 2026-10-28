@@ -1,17 +1,46 @@
 "use client"
 
+import React from 'react'
+import { useState } from "react";
 import { LogOut, Moon, Settings, Sun, User } from 'lucide-react'
 import Link from 'next/link'
-import React from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu'
 import { Button } from './ui/button'
 import { useTheme } from 'next-themes'
 import { SidebarTrigger } from './ui/sidebar'
+import { signOut } from "@/lib/auth-client";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const Navbar = () => {
     
     const { setTheme } = useTheme()
+
+    const [isLoading, setIsLoading] = useState(false);
+    const router = useRouter();
+
+    
+    const handleLogout = async () => {
+
+        setIsLoading(true);
+
+        try {
+        await signOut({
+            fetchOptions: {
+            onSuccess: () => {
+                toast("You have been logged out successfully!");
+                router.replace("/auth")
+            },
+            },
+        });
+        } catch (e) {
+        console.log(e);
+        toast("Failed to log out! Please try again");
+        } finally {
+        setIsLoading(false);
+        }
+    };
 
     return (
         <nav className='flex items-center justify-between p-4 shadow-sm dark:border-b sticky top-0 bg-background z-10'>
@@ -64,7 +93,13 @@ const Navbar = () => {
                             <DropdownMenuSeparator />
                             <DropdownMenuItem> <User className='h-5 w-5 mr-2' /> Profile </DropdownMenuItem>
                             <DropdownMenuItem> <Settings className='h-5 w-5 mr-2' /> Settings </DropdownMenuItem>
-                            <DropdownMenuItem> <LogOut className='h-5 w-5 mr-2' /> Logout </DropdownMenuItem>
+                            <DropdownMenuItem
+                            onClick={handleLogout}
+                            disabled={isLoading}
+                            className="cursor-pointer"
+                            > 
+                            <LogOut className='h-5 w-5 mr-2' /> <span>{isLoading ? "Logging out..." : "Logout"}</span> 
+                            </DropdownMenuItem>
                         </DropdownMenuGroup>
                     </DropdownMenuContent>
                 </DropdownMenu>

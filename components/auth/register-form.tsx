@@ -31,7 +31,7 @@ const registerSchema = z
     path: ["confirmPassword"],
   });
 
-type RegisterFormvalues = z.infer<typeof registerSchema>;
+type RegisterFormValues = z.infer<typeof registerSchema>;
 
 interface RegisterFormProps {
   onSuccess?: () => void;
@@ -40,7 +40,7 @@ interface RegisterFormProps {
 function RegisterForm({ onSuccess }: RegisterFormProps) {
   const [isLoading, setIsLoading] = useState(false);
 
-  const form = useForm<RegisterFormvalues>({
+  const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
       name: "",
@@ -50,8 +50,10 @@ function RegisterForm({ onSuccess }: RegisterFormProps) {
     },
   });
 
-  const onRegisterSubmit = async (values: RegisterFormvalues) => {
+  const onRegisterSubmit = async (values: RegisterFormValues) => {
     setIsLoading(true);
+    form.clearErrors("root");
+
     try {
       const { error } = await signUp.email({
         name: values.name,
@@ -60,29 +62,44 @@ function RegisterForm({ onSuccess }: RegisterFormProps) {
       });
 
       if (error) {
-        toast("Failed to create account. Please try again");
+        const message =
+          error.message ?? "Failed to create account. Please try again.";
+        form.setError("root", { message });
+        toast.error(message);
         return;
       }
-      toast(
-        "Your account has been created successfully. Please sign in with email & password"
-      );
 
-      if (onSuccess) {
-        onSuccess();
-      }
+      toast.success("Account created successfully.");
+      onSuccess?.();
     } catch (e) {
-      console.log(e);
+      console.error(e);
+      const message = "Something went wrong. Please try again.";
+      form.setError("root", { message });
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }
   };
+
+  const rootError = form.formState.errors.root?.message;
 
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onRegisterSubmit)}
         className="space-y-4"
+        noValidate
+        aria-busy={isLoading}
       >
+        {rootError && (
+          <p
+            role="alert"
+            className="rounded-md border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive"
+          >
+            {rootError}
+          </p>
+        )}
+
         <FormField
           control={form.control}
           name="name"
@@ -90,12 +107,18 @@ function RegisterForm({ onSuccess }: RegisterFormProps) {
             <FormItem>
               <FormLabel>Name</FormLabel>
               <FormControl>
-                <Input placeholder="Enter your name" {...field} />
+                <Input
+                  placeholder="Enter your name"
+                  autoComplete="name"
+                  disabled={isLoading}
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
+
         <FormField
           control={form.control}
           name="email"
@@ -103,12 +126,19 @@ function RegisterForm({ onSuccess }: RegisterFormProps) {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder="Enter your email" {...field} />
+                <Input
+                  type="email"
+                  placeholder="Enter your email"
+                  autoComplete="email"
+                  disabled={isLoading}
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
+
         <FormField
           control={form.control}
           name="password"
@@ -119,6 +149,8 @@ function RegisterForm({ onSuccess }: RegisterFormProps) {
                 <Input
                   type="password"
                   placeholder="Enter your password"
+                  autoComplete="new-password"
+                  disabled={isLoading}
                   {...field}
                 />
               </FormControl>
@@ -126,6 +158,7 @@ function RegisterForm({ onSuccess }: RegisterFormProps) {
             </FormItem>
           )}
         />
+
         <FormField
           control={form.control}
           name="confirmPassword"
@@ -136,6 +169,8 @@ function RegisterForm({ onSuccess }: RegisterFormProps) {
                 <Input
                   type="password"
                   placeholder="Enter your password again"
+                  autoComplete="new-password"
+                  disabled={isLoading}
                   {...field}
                 />
               </FormControl>
@@ -143,7 +178,13 @@ function RegisterForm({ onSuccess }: RegisterFormProps) {
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full" disabled={isLoading}>
+
+        <Button
+          type="submit"
+          className="w-full"
+          disabled={isLoading}
+          aria-busy={isLoading}
+        >
           {isLoading ? "Creating Account..." : "Create Account"}
         </Button>
       </form>

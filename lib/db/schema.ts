@@ -1,26 +1,5 @@
 import { relations } from "drizzle-orm";
-import {
-  pgTable,
-  text,
-  serial,
-  integer,
-  timestamp,
-  boolean,
-  index,
-  uniqueIndex,
-} from "drizzle-orm/pg-core";
-
-/* Schema Tables:
-//Better Auth Tables
-user
-session
-account
-verification
-
-//Custom Tables
-supplier
-
-*/
+import { pgTable, text, timestamp, boolean, index } from "drizzle-orm/pg-core";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -58,7 +37,6 @@ export const account = pgTable(
   "account",
   {
     id: text("id").primaryKey(),
-    issuer: text("issuer").notNull(),
     accountId: text("account_id").notNull(),
     providerId: text("provider_id").notNull(),
     userId: text("user_id")
@@ -76,13 +54,7 @@ export const account = pgTable(
       .$onUpdate(() => /* @__PURE__ */ new Date())
       .notNull(),
   },
-  (table) => [
-    uniqueIndex("account_issuer_accountId_uidx").on(
-      table.issuer,
-      table.accountId,
-    ),
-    index("account_userId_idx").on(table.userId),
-  ],
+  (table) => [index("account_userId_idx").on(table.userId)],
 );
 
 export const verification = pgTable(
@@ -119,24 +91,3 @@ export const accountRelations = relations(account, ({ one }) => ({
     references: [user.id],
   }),
 }));
-
-
-export const supplier = pgTable('supplier', {
-  id: serial('id').primaryKey(),
-  ref: text('ref').notNull().unique(),
-  orgId: integer('orgId').notNull().default(1),
-  name: text('name').notNull().default(''),
-  category: text('category').notNull().default('other'),
-  contactPerson: text('contactPerson').notNull().default(''),
-  phone: text('phone').notNull().default(''),
-  email: text('email').notNull().default(''),
-  city: text('city').notNull().default(''),
-  rating: integer('rating').notNull().default(0),
-  notes: text('notes').notNull().default(''),
-  status: text('status').notNull().default('active'),
-  createdAt: timestamp('createdAt').notNull().defaultNow(),
-  updatedAt: timestamp('updatedAt').notNull().defaultNow(),
-});
-
-export type Supplier = typeof supplier.$inferSelect;
-export type NewSupplier = typeof supplier.$inferInsert;
