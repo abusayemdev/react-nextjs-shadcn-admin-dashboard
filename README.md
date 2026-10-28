@@ -1,4 +1,24 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Admin Dashboard
+
+A modern, responsive admin dashboard built with **Next.js**, **React**, **Tailwind CSS**, and **shadcn/ui**. It provides a clean interface for managing website pages and content.
+
+
+## Preview: Light Mode
+
+![Admin Dashboard --- Light Mode](./public/dashboard-light.png)
+
+## Preview: Dark Mode
+
+![Admin Dashboard --- Dark Mode](./public/dashboard-dark.png)
+
+
+## Tech Stack
+
+-   [Next.js](https://nextjs.org/)
+-   [React](https://react.dev/)
+-   [Tailwind CSS](https://tailwindcss.com/)
+-   [shadcn/ui](https://ui.shadcn.com/)
+-   [Lucide](https://lucide.dev/) icons
 
 ## Getting Started
 
