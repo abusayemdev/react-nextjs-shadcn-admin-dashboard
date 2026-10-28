@@ -67,7 +67,6 @@ function LoginForm() {
 
       toast.success("Login success");
       router.replace("/admin/dashboard");
-      router.refresh();
     } catch (e) {
       console.error(e);
       const message = "Something went wrong. Please try again.";
