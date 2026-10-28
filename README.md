@@ -5,7 +5,7 @@ A modern, responsive admin dashboard built with **Next.js**, **React**, **Tailwi
 
 ## Preview
 
-![Admin Dashboard --- Light Mode](./public/dashboard-light.png)
+![Admin Dashboard](./public/dashboard-light.png)
 
 
 
