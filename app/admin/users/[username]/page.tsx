@@ -17,7 +17,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { Button } from '@/components/ui/button'
-import EditUser from '@/app/users/edit-user'
+import EditUser from '@/app/admin/users/edit-user'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import AppLineChart from '@/components/AppLineChart'
 
@@ -28,11 +28,11 @@ const SingleUserPage = () => {
         <Breadcrumb>
             <BreadcrumbList>
                 <BreadcrumbItem>
-                <BreadcrumbLink render={<a href="/" />}>Dashboard</BreadcrumbLink>
+                <BreadcrumbLink render={<a href="/admin/dashboard" />}>Dashboard</BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                <BreadcrumbLink render={<a href="/users" />}>
+                <BreadcrumbLink render={<a href="/admin/users" />}>
                     Users  
                 </BreadcrumbLink>
                 </BreadcrumbItem>

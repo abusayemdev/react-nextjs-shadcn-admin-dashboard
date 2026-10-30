@@ -16,6 +16,7 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { signUp } from "@/lib/auth-client";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const registerSchema = z
   .object({
@@ -33,12 +34,11 @@ const registerSchema = z
 
 type RegisterFormValues = z.infer<typeof registerSchema>;
 
-interface RegisterFormProps {
-  onSuccess?: () => void;
-}
 
-function RegisterForm({ onSuccess }: RegisterFormProps) {
+function RegisterForm() {
   const [isLoading, setIsLoading] = useState(false);
+
+  const router = useRouter();
 
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
@@ -70,7 +70,8 @@ function RegisterForm({ onSuccess }: RegisterFormProps) {
       }
 
       toast.success("Account created successfully.");
-      onSuccess?.();
+      router.replace("/admin/dashboard");
+      router.refresh();
     } catch (e) {
       console.error(e);
       const message = "Something went wrong. Please try again.";

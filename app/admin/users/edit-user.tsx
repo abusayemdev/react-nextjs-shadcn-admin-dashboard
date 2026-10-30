@@ -1,12 +1,12 @@
 "use client"
 
 import React from 'react'
-import { SheetContent, SheetDescription, SheetHeader, SheetTitle } from '../../components/ui/sheet'
+import { SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Controller, useForm } from "react-hook-form"
 import * as z from "zod"
-import { Field, FieldDescription, FieldError, FieldLabel } from '../../components/ui/field'
-import { Input } from '../../components/ui/input'
+import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field'
+import { Input } from '@/components/ui/input'
 
 import {
   Select,
@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Button } from '../../components/ui/button'
+import { Button } from '@/components/ui/button'
 
 const formSchema = z.object({
   username: z

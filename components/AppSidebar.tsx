@@ -85,7 +85,7 @@ const AppSidebar = () => {
                 <SidebarMenu>
                   <SidebarMenuItem>
                     <SidebarMenuButton render={
-                      <Link href="/users"> <Projector /> See All Users </Link>
+                      <Link href="/admin/users"> <Projector /> See All Users </Link>
                     }>
 
                     </SidebarMenuButton>
@@ -95,7 +95,7 @@ const AppSidebar = () => {
                 <SidebarMenu>
                   <SidebarMenuItem>
                     <SidebarMenuButton render={
-                      <Link href="/users/create"> <Plus /> Add User </Link>
+                      <Link href="/admin/users/create"> <Plus /> Add User </Link>
                     }>
 
                     </SidebarMenuButton>
@@ -117,14 +117,14 @@ const AppSidebar = () => {
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton render={
-                  <Link href="/users"> <Projector /> Account </Link>
+                  <Link href="/admin/users"> <Projector /> Account </Link>
                 }>
 
                 </SidebarMenuButton>
                 <SidebarMenuSub>
                   <SidebarMenuSubItem>
                     <SidebarMenuSubButton render={
-                      <Link href="/users/username"> Account Details </Link>
+                      <Link href="/admin/users/username"> Account Details </Link>
                     }>
 
                     </SidebarMenuSubButton>
