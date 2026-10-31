@@ -69,45 +69,6 @@ const AppSidebar = () => {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {/* COLLAPSABLE */}
-        <Collapsible defaultOpen className="group/collapsible">
-          <SidebarGroup>
-            <SidebarGroupLabel render={
-              <CollapsibleTrigger>
-              Collapsable Group 
-              <ChevronDown className="ml-auto transition-transform group-data-open/collapsible:rotate-180" />
-              </CollapsibleTrigger>
-            } > 
-            </SidebarGroupLabel>
-
-            <CollapsibleContent>
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton render={
-                      <Link href="/admin/users"> <Projector /> See All Users </Link>
-                    }>
-
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                </SidebarMenu>
-
-                <SidebarMenu>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton render={
-                      <Link href="/admin/users/create"> <Plus /> Add User </Link>
-                    }>
-
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                </SidebarMenu>
-
-
-              </SidebarGroupContent>
-            </CollapsibleContent>
-          </SidebarGroup>
-        </Collapsible>
-
         {/* Nested */}
 
         <SidebarGroup>
@@ -117,14 +78,14 @@ const AppSidebar = () => {
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton render={
-                  <Link href="/admin/users"> <Projector /> Account </Link>
+                  <Link href="/admin/user"> <Projector /> Account </Link>
                 }>
 
                 </SidebarMenuButton>
                 <SidebarMenuSub>
                   <SidebarMenuSubItem>
                     <SidebarMenuSubButton render={
-                      <Link href="/admin/users/username"> Account Details </Link>
+                      <Link href="/admin/user/username"> Profile </Link>
                     }>
 
                     </SidebarMenuSubButton>
@@ -141,16 +102,56 @@ const AppSidebar = () => {
         </SidebarGroup>
 
 
+                {/* COLLAPSABLE */}
+        <Collapsible defaultOpen className="group/collapsible">
+          <SidebarGroup>
+            <SidebarGroupLabel render={
+              <CollapsibleTrigger>
+              Collapsable Group 
+              <ChevronDown className="ml-auto transition-transform group-data-open/collapsible:rotate-180" />
+              </CollapsibleTrigger>
+            } > 
+            </SidebarGroupLabel>
+
+            <CollapsibleContent>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton render={
+                      <Link href="/admin/user"> <Projector /> See All Users </Link>
+                    }>
+
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </SidebarMenu>
+
+                <SidebarMenu>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton render={
+                      <Link href="/admin/user/create"> <Plus /> Add User </Link>
+                    }>
+
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </SidebarMenu>
+
+
+              </SidebarGroupContent>
+            </CollapsibleContent>
+          </SidebarGroup>
+        </Collapsible>
+
+
         <SidebarGroup>
-          <SidebarGroupLabel> Projects </SidebarGroupLabel>
+          <SidebarGroupLabel> Post </SidebarGroupLabel>
           <SidebarGroupAction>
-            <Plus /> <span className="sr-only">Add Project</span>
+            <Plus /> <span className="sr-only">Add Post</span>
           </SidebarGroupAction>
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton render={
-                  <Link href="#"> <Projector /> See All Projects </Link>
+                  <Link href="/admin/post/"> <Projector /> See All Posts </Link>
                 }>
 
                 </SidebarMenuButton>
@@ -160,7 +161,7 @@ const AppSidebar = () => {
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton render={
-                  <Link href="#"> <Plus /> Add Project </Link>
+                  <Link href="/admin/post/create"> <Plus /> Add Post </Link>
                 }>
 
                 </SidebarMenuButton>

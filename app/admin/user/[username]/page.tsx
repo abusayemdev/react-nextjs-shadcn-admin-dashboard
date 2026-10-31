@@ -17,7 +17,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { Button } from '@/components/ui/button'
-import EditUser from '@/app/admin/users/edit-user'
+import EditUser from '@/app/admin/user/edit-user'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import AppLineChart from '@/components/AppLineChart'
 
