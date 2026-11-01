@@ -1,5 +1,5 @@
 import Container from "@/components/layout/container";
-import PostForm from "@/app/admin/post/post-form";
+import PostForm from "@/app/admin/posts/post-form";
 import { auth } from "@/lib/auth";
 import { getPostBySlug } from "@/lib/db/queries";
 import { headers } from "next/headers";

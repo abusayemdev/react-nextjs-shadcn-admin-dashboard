@@ -19,13 +19,12 @@ import {
 import { Button } from '@/components/ui/button'
 
 const formSchema = z.object({
-  username: z
+  name: z
     .string()
-    .min(3, "Username must be at least 3 characters.")
-    .max(32, "Username must be at most 32 characters."),
+    .min(3, "Name must be at least 3 characters.")
+    .max(32, "Name must be at most 32 characters."),
   email: z.string().email({message: "Invalid email address!"}),
   phone: z.string().min(10).max(15),
-  location: z.string().min(2),
   role: z.enum(["admin", "user"])
 })
 
@@ -34,10 +33,9 @@ const EditUser = () => {
     const form = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
       defaultValues: {
-        username: "John Doe",
+        name: "John Doe",
         email: "john.doe@gmail.com",
         phone: "+123456789",
-        location: "New York, NY",
         role: "admin",
       },
     })
@@ -51,12 +49,12 @@ const EditUser = () => {
           
             <Controller
               control={form.control}
-              name="username"
+              name="name"
               render={({ field }) => (
                 <Field className="my-4">
-                  <Input id="username" {...field} />
+                  <Input id="name" {...field} />
                   <FieldDescription>
-                    This is your public username.
+                    This is your public name.
                   </FieldDescription>
                   <FieldError></FieldError>
                 </Field>
@@ -95,20 +93,6 @@ const EditUser = () => {
 
             />
 
-            <Controller
-              control={form.control}
-              name="location"
-              render={({ field }) => (
-                <Field className="my-4">
-                  <Input id="location" {...field} />
-                  <FieldDescription>
-                    This is your public location.
-                  </FieldDescription>
-                  <FieldError></FieldError>
-                </Field>
-              )}
-
-            />
 
 
             <Controller

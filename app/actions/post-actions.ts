@@ -2,7 +2,7 @@
 
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { post } from "@/lib/db/schema";
+import { posts } from "@/lib/db/schema";
 import { slugify } from "@/lib/utils";
 import { and, eq, ne } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
@@ -33,8 +33,8 @@ export async function createPost(formData: FormData) {
     const slug = slugify(title);
 
     //check if the slug already exists
-    const existingPost = await db.query.post.findFirst({
-      where: eq(post.slug, slug),
+    const existingPost = await db.query.posts.findFirst({
+      where: eq(posts.slug, slug),
     });
 
     if (existingPost) {
@@ -46,7 +46,7 @@ export async function createPost(formData: FormData) {
     }
 
     const [newPost] = await db
-      .insert(post)
+      .insert(posts)
       .values({
         title,
         description,
@@ -97,8 +97,8 @@ export async function updatePost(postId: number, formData: FormData) {
     // homework -> implement a extra validation check
 
     const slug = slugify(title);
-    const existingPost = await db.query.post.findFirst({
-      where: and(eq(post.slug, slug), ne(post.id, postId)),
+    const existingPost = await db.query.posts.findFirst({
+      where: and(eq(posts.slug, slug), ne(posts.id, postId)),
     });
 
     if (existingPost) {
@@ -108,8 +108,8 @@ export async function updatePost(postId: number, formData: FormData) {
       };
     }
 
-    const postToUpdate = await db.query.post.findFirst({
-      where: eq(post.id, postId),
+    const postToUpdate = await db.query.posts.findFirst({
+      where: eq(posts.id, postId),
     });
 
     if (postToUpdate?.authorId !== session.user.id) {
@@ -120,7 +120,7 @@ export async function updatePost(postId: number, formData: FormData) {
     }
 
     await db
-      .update(post)
+      .update(posts)
       .set({
         title,
         description,
@@ -128,7 +128,7 @@ export async function updatePost(postId: number, formData: FormData) {
         slug,
         updatedAt: new Date(),
       })
-      .where(eq(post.id, postId));
+      .where(eq(posts.id, postId));
 
     revalidatePath("/");
     revalidatePath(`/post/${slug}`);
@@ -162,8 +162,8 @@ export async function deletePost(postId: number) {
       };
     }
 
-    const postToDelete = await db.query.post.findFirst({
-      where: eq(post.id, postId),
+    const postToDelete = await db.query.posts.findFirst({
+      where: eq(posts.id, postId),
     });
 
     if (!postToDelete) {
@@ -179,7 +179,7 @@ export async function deletePost(postId: number) {
       };
     }
 
-    await db.delete(post).where(eq(post.id, postId));
+    await db.delete(posts).where(eq(posts.id, postId));
 
     revalidatePath("/");
     revalidatePath("/profile");

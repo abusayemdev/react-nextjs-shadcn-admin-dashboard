@@ -1,4 +1,4 @@
-import PostForm from "@/app/admin/post/post-form";
+import PostForm from "@/app/admin/posts/post-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 function CreatePostPage() {

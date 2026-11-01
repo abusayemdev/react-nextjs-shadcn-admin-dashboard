@@ -1,12 +1,12 @@
 import { desc, eq } from "drizzle-orm";
 import { db } from ".";
-import { post } from "./schema";
+import { posts } from "./schema";
 
 //get all posts
 export async function getAllPosts() {
   try {
-    const allPosts = await db.query.post.findMany({
-      orderBy: [desc(post.createdAt)],
+    const allPosts = await db.query.posts.findMany({
+      orderBy: [desc(posts.createdAt)],
       with: {
         author: true,
       },
@@ -21,8 +21,8 @@ export async function getAllPosts() {
 
 export async function getPostBySlug(slug: string) {
   try {
-    const firstPost = await db.query.post.findFirst({
-      where: eq(post.slug, slug),
+    const firstPost = await db.query.posts.findFirst({
+      where: eq(posts.slug, slug),
       with: {
         author: true,
       },

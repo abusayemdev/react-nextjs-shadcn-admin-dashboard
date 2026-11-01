@@ -1,4 +1,4 @@
-import PostContent from "@/app/admin/post/post-content";
+import PostContent from "@/app/admin/posts/post-content";
 import { auth } from "@/lib/auth";
 import { getPostBySlug } from "@/lib/db/queries";
 import { headers } from "next/headers";

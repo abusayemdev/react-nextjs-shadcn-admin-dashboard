@@ -9,7 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 
 export type User = {
     id: string;
-    username: string;
+    name: string;
     email: string;
     status:  "pending" | "processing" | "active" | "failed";
 }
@@ -39,8 +39,8 @@ export const columns = columnHelper.columns([
     enableSorting: false,
     enableHiding: false,
   }),
-  columnHelper.accessor("username", {
-    header: "Username",
+  columnHelper.accessor("name", {
+    header: "Name",
   }),
   columnHelper.accessor("email", {
     header: ({ column }) => {

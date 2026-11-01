@@ -1,36 +1,65 @@
-import { auth } from "@/lib/auth";
-import { db } from "@/lib/db";
-import { user } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+
+import { loadEnvConfig } from "@next/env";
+
+loadEnvConfig(process.cwd());
 
 async function seedAdmin() {
-  const email = "admin@example.com";
+  const { auth } = await import("@/lib/auth");
+  const { db } = await import("@/lib/db");
+  const { users } = await import("@/lib/db/schema");
+  const { eq } = await import("drizzle-orm");
 
-  const existing = await db
+  const email = "admin@example.com";
+  const password = process.env.ADMIN_PASSWORD;
+
+  if (!password || password.length < 9) {
+    throw new Error("ADMIN_PASSWORD must contain at least 9 characters.");
+  }
+
+  // Check existing user
+  const [existingUser] = await db
     .select()
-    .from(user)
-    .where(eq(user.email, email))
+    .from(users)
+    .where(eq(users.email, email))
     .limit(1);
 
-  if (existing.length > 0) {
+  if (existingUser) {
+    if (existingUser.role !== "admin") {
+      await db
+        .update(users)
+        .set({ role: "admin" })
+        .where(eq(users.id, existingUser.id));
+    }
+
     console.log(`Admin already exists: ${email}`);
     return;
   }
 
+  // Register admin through Better Auth
   const result = await auth.api.signUpEmail({
     body: {
       name: "Admin",
       email,
-      password: "123456789",
+      password,
     },
   });
 
-  console.log("Admin created:", result.user.email);
+  if (!result.user) {
+    throw new Error("Admin registration failed.");
+  }
+
+  // Assign admin role
+  await db
+    .update(users)
+    .set({ role: "admin" })
+    .where(eq(users.id, result.user.id));
+
+  console.log(`Admin created successfully: ${email}`);
 }
 
 seedAdmin()
   .then(() => process.exit(0))
-  .catch((err) => {
-    console.error(err);
+  .catch((error) => {
+    console.error("Admin seeding failed:", error);
     process.exit(1);
   });

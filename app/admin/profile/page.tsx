@@ -17,7 +17,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { Button } from '@/components/ui/button'
-import EditUser from '@/app/admin/user/edit-user'
+import EditUser from '@/app/admin/users/edit-user'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import AppLineChart from '@/components/AppLineChart'
 
@@ -133,7 +133,7 @@ const SingleUserPage = () => {
                             <Progress value={70} />
                         </div>
                         <div className="flex items-center gap-2" >
-                            <span className="font-bold" >Username:</span>
+                            <span className="font-bold" >Name:</span>
                             <span>John Doe</span>
                         </div>
 
@@ -145,10 +145,7 @@ const SingleUserPage = () => {
                             <span className="font-bold">Phone:</span>
                             <span>+1 234 5678</span>
                         </div>
-                        <div className="flex items-center gap-2">
-                            <span className="font-bold">Location:</span>
-                            <span>New York, NY</span>
-                        </div>
+                     
                         <div className="flex items-center gap-2">
                             <span className="font-bold">Role:</span>
                             <Badge>Admin</Badge>

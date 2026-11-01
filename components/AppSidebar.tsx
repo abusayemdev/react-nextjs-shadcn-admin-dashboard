@@ -78,14 +78,14 @@ const AppSidebar = () => {
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton render={
-                  <Link href="/admin/user"> <Projector /> Account </Link>
+                  <Link href="/admin/users"> <Projector /> Account </Link>
                 }>
 
                 </SidebarMenuButton>
                 <SidebarMenuSub>
                   <SidebarMenuSubItem>
                     <SidebarMenuSubButton render={
-                      <Link href="/admin/user/username"> Profile </Link>
+                      <Link href="/admin/users/name"> Profile </Link>
                     }>
 
                     </SidebarMenuSubButton>
@@ -118,7 +118,7 @@ const AppSidebar = () => {
                 <SidebarMenu>
                   <SidebarMenuItem>
                     <SidebarMenuButton render={
-                      <Link href="/admin/user"> <Projector /> See All Users </Link>
+                      <Link href="/admin/users"> <Projector /> See All Users </Link>
                     }>
 
                     </SidebarMenuButton>
@@ -128,7 +128,7 @@ const AppSidebar = () => {
                 <SidebarMenu>
                   <SidebarMenuItem>
                     <SidebarMenuButton render={
-                      <Link href="/admin/user/create"> <Plus /> Add User </Link>
+                      <Link href="/admin/users/create"> <Plus /> Add User </Link>
                     }>
 
                     </SidebarMenuButton>
@@ -151,7 +151,7 @@ const AppSidebar = () => {
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton render={
-                  <Link href="/admin/post/"> <Projector /> See All Posts </Link>
+                  <Link href="/admin/posts/"> <Projector /> See All Posts </Link>
                 }>
 
                 </SidebarMenuButton>
@@ -161,7 +161,7 @@ const AppSidebar = () => {
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton render={
-                  <Link href="/admin/post/create"> <Plus /> Add Post </Link>
+                  <Link href="/admin/posts/create"> <Plus /> Add Post </Link>
                 }>
 
                 </SidebarMenuButton>

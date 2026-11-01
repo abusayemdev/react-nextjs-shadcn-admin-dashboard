@@ -8,6 +8,13 @@
       "when": 1793201979184,
       "tag": "0000_numerous_white_tiger",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1793546163941,
+      "tag": "0001_smart_marvel_apes",
+      "breakpoints": true
     }
   ]
 }
