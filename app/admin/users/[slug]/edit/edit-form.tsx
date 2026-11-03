@@ -3,9 +3,8 @@
 import * as z from "zod";
 import { useRouter } from "next/navigation";
 import { DynamicForm } from "@/components/dynamicForm";
-import { FieldConfig } from "@/lib/types";
+import { FieldConfig, NewUser, UpdateUserInput } from "@/lib/types";
 import { updateUser } from "@/app/actions/user-actions";
-import { NewUser } from "@/lib/db/schema";
 
 const userFields: FieldConfig[] = [
   {
@@ -26,7 +25,7 @@ const userFields: FieldConfig[] = [
     name: "phone",
     type: "text",
     label: "Phone",
-    schema: z.string().min(8, "Too short").or(z.literal("")).optional(),
+    schema: z.string().min(8, "Too short").or(z.literal("")).nullable().optional(),
     required: false,
   },
   {
@@ -47,7 +46,7 @@ const userFields: FieldConfig[] = [
 export function EditUserForm({ initialData }: { initialData: NewUser }) {
   const router = useRouter();
 
-  const onSubmit = async (values: Record<string, unknown> | FormData) => {
+  const onSubmit = async (values: UpdateUserInput) => {
     const result = await updateUser(initialData.id, values);
 
     if (result.success) {

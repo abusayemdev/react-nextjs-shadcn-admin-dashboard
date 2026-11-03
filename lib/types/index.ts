@@ -69,7 +69,7 @@ export type DynamicFormProps = {
   backLabel: string;
   fields: FieldConfig[];
   defaultValues?: Record<string, any>; 
-  onSubmit: (values: Record<string, unknown> | FormData) => void | Promise<void>;
+  onSubmit: (values: any) => void | Promise<void>;
   submitLabel?: string;
   columns?: 1 | 2 | 3;
   isLoading?: boolean;
@@ -79,7 +79,24 @@ export type DynamicFormProps = {
 
 export type User = InferSelectModel<typeof users>;
 export type NewUser = InferInsertModel<typeof users>;
-export type UpdateUserInput = Pick<NewUser, "name" | "email" | "phone" | "role" | "status">;
+
+
+export type CreateUserInput = {
+  name: string;
+  email: string;
+  password: string;
+  phone?: string | null;
+  role: "admin" | "user";
+  status: boolean;
+};
+
+export type UpdateUserInput = {
+    name: string;
+    email: string;
+    phone?: string | null;
+    role: "admin" | "user";
+    status: boolean;
+}
 
 
 

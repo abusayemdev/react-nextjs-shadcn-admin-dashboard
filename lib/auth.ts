@@ -17,10 +17,6 @@ export const auth = betterAuth({
 
   }),
 
-  plugins: [
-    admin(),
-  ],
-
   user: {
     additionalFields: {
       phone: {
@@ -39,7 +35,8 @@ export const auth = betterAuth({
         required: false,
         defaultValue: false,
         input: false,
-    },
+      },
+
     },
   },
 
