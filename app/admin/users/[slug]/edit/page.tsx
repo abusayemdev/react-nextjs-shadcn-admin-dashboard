@@ -15,7 +15,6 @@ export default async function EditUserPage({ params }: { params: Promise<{ slug:
       email: true,
       phone: true,
       role: true,
-      status: true,
     },
   });
 

@@ -71,7 +71,7 @@ export function EditUserForm({ userId, initialData } : {
         { label: "Edit" },
       ]}
       backUrl="/admin/users"
-      backLabel="User Index"
+      backLabel="Index"
       fields={userFields}
       defaultValues={initialData}
       onSubmit={onSubmit}
