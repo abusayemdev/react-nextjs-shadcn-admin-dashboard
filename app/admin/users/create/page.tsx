@@ -3,10 +3,10 @@
 import * as z from "zod";
 import { useRouter } from "next/navigation";
 import { DynamicForm } from "@/components/dynamicForm";
-import { FieldConfig } from "@/lib/types/index";
+import { FieldConfig } from "@/lib/types";
 import { createUser } from "@/app/actions/user-actions";
 
-// 1. Define the fields
+
 const userFields: FieldConfig[] = [
   {
     name: "name",
@@ -53,7 +53,7 @@ const userFields: FieldConfig[] = [
   },
 ];
 
-// 2. The Page Component
+
 export default function CreateUserPage() {
   const router = useRouter();
 
@@ -62,9 +62,9 @@ export default function CreateUserPage() {
 
     if (result.success) {
       router.push("/admin/users");
-      router.refresh(); // Refresh the list page
+      router.refresh();
     } else {
-      alert(result.message); // Handle errors (e.g., duplicate email)
+      alert(result.message);
     }
   };
 

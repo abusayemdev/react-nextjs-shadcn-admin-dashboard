@@ -145,11 +145,11 @@ export function DynamicForm({
     <div>
       <div className="flex items-center justify-between gap-4 mb-4">
         <AppBreadcrumb items={breadcrumbItems} />
-        <Button size="sm" variant="outline" render={<Link href={backUrl}>{backLabel}</Link>} />
+        <Button size="sm" className="me-4" render={<Link href={backUrl}>{backLabel}</Link>} />
       </div>
 
       <Card>
-        <CardHeader>
+        <CardHeader className="border-b">
           <CardTitle className="text-lg font-semibold">{finalTitle}</CardTitle>
         </CardHeader>
 

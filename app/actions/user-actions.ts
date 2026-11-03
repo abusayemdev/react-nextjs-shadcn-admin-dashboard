@@ -1,16 +1,16 @@
 "use server";
 
 import { auth } from "@/lib/auth";
+import { getSessionUser, requireAdmin } from "@/lib/auth-helpers";
 import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { User, NewUser, UpdateUserInput } from "@/lib/types";
+import { desc, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import * as z from "zod";
 
-// ==========================================
-// ZOD SCHEMAS
-// ==========================================
+
 const createUserSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Invalid email address"),
@@ -24,236 +24,288 @@ const updateUserSchema = z.object({
   email: z.string().email("Invalid email address"),
   phone: z.string().min(8, "Phone must be at least 8 characters").or(z.literal("")).optional(),
   role: z.enum(["admin", "user"]).optional(),
+  status: z.enum(["true", "false"]).transform((val) => val === "true"),
 });
 
-// ==========================================
-// CREATE USER
-// ==========================================
-export async function createUser(values: Record<string, unknown> | FormData) {
+export type UserInput = {
+    name: string;
+    email: string;
+    phone?: string | null;
+    role: "admin" | "user";
+    status: boolean;
+
+}
+
+
+export type CreateUserInput = {
+  name: string;
+  email: string;
+  password: string;
+  phone?: string | null;
+  role: "admin" | "user";
+  status: boolean;
+};
+
+
+
+export async function getUsers() {
   try {
-    // 1. Auth check — only admins can create users
     const session = await auth.api.getSession({
       headers: await headers(),
-    });
+    })
 
-    if (!session?.user || session.user.role !== "admin") {
+    if(!session?.user || session.user.role !== "admin") {
       return {
         success: false,
-        message: "You must be an admin to create a user",
+        message: "You must be an admin to get users data.",
+        data: [],
+      }
+    }
+
+    const usersData = await db.select().from(users).orderBy(desc(users.createdAt));
+
+    return { 
+      success: true, 
+      data: usersData 
+    };
+
+  } catch (error) {
+    console.error("Get users error:", error);
+
+    return {
+      success: false,
+      message: "Failed to get users data",
+      data: [],
+    };
+  }
+
+}
+
+export async function createUser(input: CreateUserInput) {
+  try {
+    // auth check
+    await requireAdmin();
+
+    // Check if email already exists
+    const existingUser = await db.query.users.findFirst({
+      where: eq(users.email, input.email),
+    });
+
+    if (existingUser) {
+      return {
+        success: false,
+        message: "A user with this email already exists.",
       };
     }
 
-    // 2. Parse form data
-    const rawData =
-      values instanceof FormData
-        ? Object.fromEntries(values.entries())
-        : values;
-
-    const parsedData = createUserSchema.parse(rawData);
-
-    // 3. Create account via Better Auth (handles password hashing)
+    // 3. Create the account via Better Auth
     const newUser = await auth.api.signUpEmail({
       body: {
-        name: parsedData.name,
-        email: parsedData.email,
-        password: parsedData.password,
+        name: input.name,
+        email: input.email,
+        password: input.password,
       },
     });
 
-    // 4. Update custom fields (role & phone) — signUpEmail doesn't accept them
-    const needsUpdate =
-      (parsedData.role && parsedData.role !== "user") ||
-      (parsedData.phone && parsedData.phone.trim() !== "");
-
-    if (needsUpdate) {
-      await db
-        .update(users)
-        .set({
-          role: parsedData.role || "user",
-          phone:
-            parsedData.phone && parsedData.phone.trim() !== ""
-              ? parsedData.phone
-              : null,
-        })
-        .where(eq(users.id, newUser.user.id));
-    }
-
-    // 5. Revalidate cache
-    revalidatePath("/admin/user");
-
-    return {
-      success: true,
-      message: "User created successfully",
-    };
-  } catch (e: any) {
-    console.error("Create user error:", e);
-
-    // Handle Better Auth duplicate email error gracefully
-    if (e.message?.includes("already exists")) {
+    if (!newUser?.user?.id) {
       return {
         success: false,
-        message: "A user with this email already exists",
+        message: "Failed to create user account.",
       };
     }
 
-    return {
-      success: false,
-      message: e.message || "Failed to create user",
-    };
-  }
-}
-
-// ==========================================
-// UPDATE USER
-// ==========================================
-export async function updateUser(
-  userId: string,
-  values: Record<string, unknown> | FormData
-) {
-  try {
-    // 1. Auth check
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-
-    if (!session?.user) {
-      return {
-        success: false,
-        message: "You must be logged in to edit a user",
-      };
-    }
-
-    // 2. Parse form data
-    const rawData =
-      values instanceof FormData
-        ? Object.fromEntries(values.entries())
-        : values;
-
-    const parsedData = updateUserSchema.parse(rawData);
-
-    // 3. Check if email is taken by another user
-    const existingUser = await db.query.users.findFirst({
-      where: eq(users.email, parsedData.email),
-    });
-
-    if (existingUser && existingUser.id !== userId) {
-      return {
-        success: false,
-        message: "A user with this email already exists",
-      };
-    }
-
-    // 4. Check if target user exists
-    const userToUpdate = await db.query.users.findFirst({
-      where: eq(users.id, userId),
-    });
-
-    if (!userToUpdate) {
-      return {
-        success: false,
-        message: "User not found",
-      };
-    }
-
-    // 5. Authorization — only admins or the user themselves can edit
-    if (session.user.role !== "admin" && userToUpdate.id !== session.user.id) {
-      return {
-        success: false,
-        message: "You can only edit your own profile",
-      };
-    }
-
-    // 6. Update DB
+    // Update custom fields (role, phone, status)
+    // signUpEmail doesn't accept these, so we update after creation
     await db
       .update(users)
       .set({
-        name: parsedData.name,
-        email: parsedData.email,
-        phone:
-          parsedData.phone && parsedData.phone.trim() !== ""
-            ? parsedData.phone
-            : null,
-        ...(parsedData.role && { role: parsedData.role }),
-        updatedAt: new Date(),
+        role: input.role,
+        phone: input.phone?.trim() || null,
+        status: input.status,
       })
-      .where(eq(users.id, userId));
+      .where(eq(users.id, newUser.user.id));
 
-    // 7. Revalidate
-    revalidatePath("/admin/user");
-    revalidatePath(`/admin/user/${userId}/edit`);
+    revalidatePath("/admin/users");
 
     return {
       success: true,
-      message: "User updated successfully",
+      message: "User created successfully.",
     };
-  } catch (e: any) {
-    console.error("Update user error:", e);
+  } catch (error: any) {
+    console.error("Create user error:", error);
+
+    if (error.message === "Forbidden") {
+      return {
+        success: false,
+        message: "You must be an admin to create users.",
+      };
+    }
+    if (error.message === "Unauthorized") {
+      return {
+        success: false,
+        message: "You must be logged in.",
+      };
+    }
+
+    // Better Auth duplicate email error (fallback)
+    if (error.message?.includes("already exists")) {
+      return {
+        success: false,
+        message: "A user with this email already exists.",
+      };
+    }
+
     return {
       success: false,
-      message: e.message || "Failed to update user",
+      message: error.message || "Failed to create user.",
     };
   }
 }
 
-// ==========================================
-// DELETE USER
-// ==========================================
-export async function deleteUser(userId: string) {
+
+export async function getUser(userId: string) {
   try {
-    // 1. Auth check
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-
-    if (!session?.user) {
-      return {
-        success: false,
-        message: "You must be logged in to delete a user",
-      };
-    }
-
-    // 2. Check if target user exists
-    const userToDelete = await db.query.users.findFirst({
+    const user = await db.query.users.findFirst({
       where: eq(users.id, userId),
     });
 
-    if (!userToDelete) {
+    if (!user) {
       return {
         success: false,
         message: "User not found",
+        data: null,
       };
     }
-
-    // 3. Authorization — only admins can delete, and you can't delete yourself
-    if (session.user.role !== "admin") {
-      return {
-        success: false,
-        message: "You must be an admin to delete a user",
-      };
-    }
-
-    if (session.user.id === userId) {
-      return {
-        success: false,
-        message: "You cannot delete your own account",
-      };
-    }
-
-    // 4. Delete from DB
-    await db.delete(users).where(eq(users.id, userId));
-
-    // 5. Revalidate
-    revalidatePath("/admin/user");
 
     return {
       success: true,
-      message: "User deleted successfully",
+      message: "User fetched successfully",
+      data: user,
     };
+
+  } catch (error: any) {
+    console.error("Error:", error);
+    return {
+      success: false,
+      message: "Failed to fetch user",
+      data: null,
+    };
+  }
+}
+
+
+export async function updateUser(userId: string, input: UserInput) {
+
+    try {
+      //auth check
+      const sessionUser = await getSessionUser();
+      if (!sessionUser) {
+        return {
+          success: false,
+          message: "You must be logged in.",
+        };
+      }
+
+      //get the user
+      const user = await getUser(userId);
+      if (!user.success || !user.data) {
+        return {
+          success: false,
+          message: "User not found.",
+        };
+      }
+
+      //check the owner of the user
+      const isAdmin = sessionUser.role === "admin";
+      const isOwner = user.data.id === sessionUser.id;
+
+      if (!isAdmin && !isOwner) {
+        return {
+          success: false,
+          message: "You can only edit your own profile.",
+        };
+      }
+
+      //check requested email is existed or not 
+      if (input.email !== user.data.email) {
+        const existingUser = await db.query.users.findFirst({
+          where: eq(users.email, input.email),
+        });
+
+        if (existingUser && existingUser.id !== userId) {
+          return {
+            success: false,
+            message: "A user with this email already exists.",
+          };
+        }
+      }
+
+      await db.update(users)
+              .set({
+                  name: input.name,
+                  email: input.email,
+                  phone: input.phone?.trim() || null,
+                  ...(isAdmin && { role: input.role }),
+                  updatedAt: new Date(),
+              })
+              .where(eq(users.id, userId));
+
+
+      revalidatePath("/admin/users");
+      revalidatePath(`/admin/users/${userId}/edit`);
+
+      return {
+        success: true,
+        message: "User updated successfully",
+      };
+  } catch (error) {
+      console.error("Update user error:", error);
+      return {
+        success: false,
+        message: "Failed to update user",
+      };
+  }
+}
+
+
+export async function deleteUser(userId: string) {
+  try {
+    //check Auth
+    const sessionUser = await getSessionUser();
+    if (!sessionUser) {
+      return { success: false, message: "You must be logged in." };
+    }
+
+    // Admin check
+    if (sessionUser.role !== "admin") {
+      return { success: false, message: "You must be an admin to delete users." };
+    }
+
+    // Cannot delete self
+    if (sessionUser.id === userId) {
+      return { success: false, message: "You cannot delete your own account." };
+    }
+
+    // get user
+    const user = await getUser(userId);
+    if (!user.success || !user.data) {
+      return { success: false, message: "User not found." };
+    }
+
+    // Delete via Better Auth (cascades sessions, accounts)
+    await auth.api.removeUser({
+      body: { userId },
+      headers: await headers(),
+    });
+
+    revalidatePath("/admin/users");
+
+    return { success: true, message: "User deleted successfully." };
   } catch (e: any) {
     console.error("Delete user error:", e);
     return {
       success: false,
-      message: e.message || "Failed to delete user",
+      message: e.message || "Failed to delete user.",
     };
   }
 }

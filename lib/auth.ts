@@ -3,6 +3,7 @@ import { drizzleAdapter } from "@better-auth/drizzle-adapter";
 import { headers } from "next/headers";
 import { db } from "./db";
 import * as schema from "@/lib/db/schema";
+import { admin } from "better-auth/plugins"; 
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -15,6 +16,10 @@ export const auth = betterAuth({
       },
 
   }),
+
+  plugins: [
+    admin(),
+  ],
 
   user: {
     additionalFields: {
@@ -29,6 +34,12 @@ export const auth = betterAuth({
         defaultValue: "user",
         input: false,
       },
+      status: {  
+        type: "boolean",
+        required: false,
+        defaultValue: false,
+        input: false,
+    },
     },
   },
 

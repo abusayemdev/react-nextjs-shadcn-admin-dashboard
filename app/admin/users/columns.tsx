@@ -1,18 +1,17 @@
+"use client"
+
 import { createColumnHelper } from "@tanstack/react-table";
-import { DataTableFeatures } from "./data-table-features";
+import { DataTableFeatures } from "@/components/data-table/data-table-features";
 import { cn } from "cn";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from '@/components/ui/button';
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
+import { User } from "@/lib/db/schema";
+import Link from "next/link";
 
 
-export type User = {
-    id: string;
-    name: string;
-    email: string;
-    status:  "pending" | "processing" | "active" | "failed";
-}
 
 const columnHelper = createColumnHelper<DataTableFeatures, User>()
 
@@ -55,51 +54,75 @@ export const columns = columnHelper.columns([
       )
     },
   }),
-  columnHelper.accessor("status", {
-    header: "Status",
-    cell: ({row}) => {
-        const status = row.getValue("status");
-
-        return <div className={cn(
-          `p-1 rounded-md w-max text-xs`,
-          status === "pending" && "bg-yellow-500/70",
-          status === "active" && "bg-green-500/70",
-          status === "preccessing" && "bg-blue-500/70",
-          status === "failed" && "bg-red-500/70",
-
-
-        )}>
-           {status as string }
-           </div>
-    }
+  columnHelper.accessor("phone", {
+    header: "Phone",
   }),
-
-  columnHelper.display({
-    id: "actions",
+  columnHelper.accessor("role", {
+    header: "Role",
     cell: ({ row }) => {
-      const user = row.original
- 
+      const role = row.original.role;
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            render={<Button variant="ghost" className="h-8 w-8 p-0" />}
-          >
-            <span className="sr-only">Open menu</span>
-            <MoreHorizontal className="h-4 w-4" />
-          </DropdownMenuTrigger>
-
-          <DropdownMenuContent className="w-max" align="end">
-            <DropdownMenuGroup>
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            </DropdownMenuGroup>
-            <DropdownMenuItem>Edit </DropdownMenuItem>
-            <DropdownMenuItem>View customer details</DropdownMenuItem>
-           
-          </DropdownMenuContent>
-          
-        </DropdownMenu>
-      )
+        <Badge variant={role === "admin" ? "default" : "secondary"}>
+          {role === "admin" ? "Admin" : "User"}
+        </Badge>
+      );
     },
   }),
+  columnHelper.accessor("status", {
+    header: "Status",
+    cell: ({ row }) => {
+      const status = row.original.status;
+      return (
+        <Badge variant={status ? "default" : "secondary"}>
+          {status ? "Active" : "Inactive"}
+        </Badge>
+      );
+    },
+  }),
+
+columnHelper.display({
+  id: "actions",
+  cell: ({ row }) => {
+    const user = row.original;
+
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          render={<Button variant="ghost" className="h-8 w-8 p-0" />}
+        >
+          <span className="sr-only">Open menu</span>
+          <MoreHorizontal className="h-4 w-4" />
+        </DropdownMenuTrigger>
+
+        <DropdownMenuContent className="w-max" align="end">
+          <DropdownMenuGroup>
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          </DropdownMenuGroup>
+          <DropdownMenuSeparator />
+          
+          <DropdownMenuItem render={
+            <Link href={`/admin/users/${user.id}/edit`}>Edit</Link>
+          } />
+          
+          <DropdownMenuItem render={
+            <Link href={`/admin/users/${user.id}`}>View details</Link>
+          } />
+
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            className="text-red-600"
+            onClick={() => {
+              if (confirm("Are you sure you want to delete this user?")) {
+                // call deleteUser
+              }
+            }}
+          >
+            Delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+  },
+}),
 
 ])

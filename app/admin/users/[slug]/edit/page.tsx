@@ -4,14 +4,15 @@ import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { EditUserForm } from "./edit-form";
 
-export default async function EditUserPage({ params }: { params: { id: string } }) {
-  // 1. Fetch from DB
+export default async function EditUserPage({ params }: { params: Promise<{ slug: string }> }) {
+
+  const { slug } = await params;
+
   const user = await db.query.users.findFirst({
-    where: eq(users.id, params.id),
+    where: eq(users.id, slug),
   });
 
   if (!user) notFound();
 
-  // 2. Pass DB data to the client form
   return <EditUserForm initialData={user} />;
 }

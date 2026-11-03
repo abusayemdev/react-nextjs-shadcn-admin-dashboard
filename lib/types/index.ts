@@ -1,4 +1,6 @@
+import { InferInsertModel, InferSelectModel } from "drizzle-orm";
 import * as z from "zod";
+import { users } from "../db/schema";
 
 export interface PostListProps {
   posts: Array<{
@@ -47,7 +49,7 @@ export interface DeletePostButtonProps {
 }
 
 
-
+//input field config
 export type FieldConfig = {
   name: string;
   label?: string;
@@ -58,8 +60,9 @@ export type FieldConfig = {
   required?: boolean;
 };
 
+//Dynamic form props
 export type DynamicFormProps = {
-  mode: "create" | "edit"; // <-- New: Defines the form behavior
+  mode: "create" | "edit";
   title: string;
   breadcrumbItems: { label: string; href?: string }[];
   backUrl: string;
@@ -69,5 +72,14 @@ export type DynamicFormProps = {
   onSubmit: (values: Record<string, unknown> | FormData) => void | Promise<void>;
   submitLabel?: string;
   columns?: 1 | 2 | 3;
-  isLoading?: boolean; // <-- New: For edit mode fetching
+  isLoading?: boolean;
 };
+
+//user types
+
+export type User = InferSelectModel<typeof users>;
+export type NewUser = InferInsertModel<typeof users>;
+export type UpdateUserInput = Pick<NewUser, "name" | "email" | "phone" | "role" | "status">;
+
+
+

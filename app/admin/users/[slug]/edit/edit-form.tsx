@@ -3,8 +3,9 @@
 import * as z from "zod";
 import { useRouter } from "next/navigation";
 import { DynamicForm } from "@/components/dynamicForm";
-import { FieldConfig } from "@/lib/types/index";
+import { FieldConfig } from "@/lib/types";
 import { updateUser } from "@/app/actions/user-actions";
+import { NewUser } from "@/lib/db/schema";
 
 const userFields: FieldConfig[] = [
   {
@@ -41,22 +42,16 @@ const userFields: FieldConfig[] = [
   },
 ];
 
-type User = {
-  id: string;
-  name: string;
-  email: string;
-  phone?: string | null;
-  role: "admin" | "user";
-};
 
-export function EditUserForm({ initialData }: { initialData: User }) {
+
+export function EditUserForm({ initialData }: { initialData: NewUser }) {
   const router = useRouter();
 
   const onSubmit = async (values: Record<string, unknown> | FormData) => {
     const result = await updateUser(initialData.id, values);
 
     if (result.success) {
-      router.push("/admin/user");
+      router.push("/admin/users");
       router.refresh();
     } else {
       alert(result.message);
@@ -69,11 +64,11 @@ export function EditUserForm({ initialData }: { initialData: User }) {
       title={`Edit User: ${initialData.name}`}
       breadcrumbItems={[
         { label: "Dashboard", href: "/admin/dashboard" },
-        { label: "Users", href: "/admin/user" },
+        { label: "Users", href: "/admin/users" },
         { label: "Edit" },
       ]}
-      backUrl="/admin/user"
-      backLabel="Back"
+      backUrl="/admin/users"
+      backLabel="User Index"
       fields={userFields}
       defaultValues={initialData}
       onSubmit={onSubmit}
