@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth";
 import { getSessionUser, requireAdmin } from "@/lib/auth-helpers";
 import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";
-import { User, NewUser, UpdateUserInput } from "@/lib/types";
+import { UpdateUserInput, CreateUserInput } from "@/lib/types";
 import { desc, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
@@ -26,26 +26,6 @@ const updateUserSchema = z.object({
   role: z.enum(["admin", "user"]).optional(),
   status: z.enum(["true", "false"]).transform((val) => val === "true"),
 });
-
-export type UserInput = {
-    name: string;
-    email: string;
-    phone?: string | null;
-    role: "admin" | "user";
-    status: boolean;
-
-}
-
-
-export type CreateUserInput = {
-  name: string;
-  email: string;
-  password: string;
-  phone?: string | null;
-  role: "admin" | "user";
-  status: boolean;
-};
-
 
 
 export async function getUsers() {
@@ -120,8 +100,7 @@ export async function createUser(input: CreateUserInput) {
       .update(users)
       .set({
         role: input.role,
-        phone: input.phone?.trim() || null,
-        status: input.status,
+        phone: input.phone?.trim() || null
       })
       .where(eq(users.id, newUser.user.id));
 
@@ -194,7 +173,7 @@ export async function getUser(userId: string) {
 }
 
 
-export async function updateUser(userId: string, input: UserInput) {
+export async function updateUser(userId: string, input: UpdateUserInput) {
 
     try {
       //auth check
@@ -270,42 +249,36 @@ export async function updateUser(userId: string, input: UserInput) {
 
 export async function deleteUser(userId: string) {
   try {
-    //check Auth
     const sessionUser = await getSessionUser();
     if (!sessionUser) {
       return { success: false, message: "You must be logged in." };
     }
 
-    // Admin check
     if (sessionUser.role !== "admin") {
       return { success: false, message: "You must be an admin to delete users." };
     }
 
-    // Cannot delete self
     if (sessionUser.id === userId) {
       return { success: false, message: "You cannot delete your own account." };
     }
 
-    // get user
-    const user = await getUser(userId);
-    if (!user.success || !user.data) {
+    // Existence check
+    const existing = await db
+      .select({ id: users.id })
+      .from(users)
+      .where(eq(users.id, userId))
+      .limit(1);
+
+    if (existing.length === 0) {
       return { success: false, message: "User not found." };
     }
 
-    // Delete via Better Auth (cascades sessions, accounts)
-    await auth.api.removeUser({
-      body: { userId },
-      headers: await headers(),
-    });
+    await db.delete(users).where(eq(users.id, userId));
 
     revalidatePath("/admin/users");
-
     return { success: true, message: "User deleted successfully." };
-  } catch (e: any) {
-    console.error("Delete user error:", e);
-    return {
-      success: false,
-      message: e.message || "Failed to delete user.",
-    };
+  } catch (e) {
+    console.error("Error:", e);
+    return { success: false, message: "Failed to delete user." };
   }
 }

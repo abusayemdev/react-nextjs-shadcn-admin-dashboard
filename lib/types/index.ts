@@ -80,14 +80,12 @@ export type DynamicFormProps = {
 export type User = InferSelectModel<typeof users>;
 export type NewUser = InferInsertModel<typeof users>;
 
-
 export type CreateUserInput = {
   name: string;
   email: string;
   password: string;
   phone?: string | null;
   role: "admin" | "user";
-  status: boolean;
 };
 
 export type UpdateUserInput = {
@@ -95,7 +93,6 @@ export type UpdateUserInput = {
     email: string;
     phone?: string | null;
     role: "admin" | "user";
-    status: boolean;
 }
 
 

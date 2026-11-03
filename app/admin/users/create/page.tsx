@@ -3,7 +3,7 @@
 import * as z from "zod";
 import { useRouter } from "next/navigation";
 import { DynamicForm } from "@/components/dynamicForm";
-import { FieldConfig } from "@/lib/types";
+import { CreateUserInput, FieldConfig } from "@/lib/types";
 import { createUser } from "@/app/actions/user-actions";
 
 
@@ -57,7 +57,7 @@ const userFields: FieldConfig[] = [
 export default function CreateUserPage() {
   const router = useRouter();
 
-  const onSubmit = async (values: Record<string, unknown> | FormData) => {
+  const onSubmit = async (values: CreateUserInput) => {
     const result = await createUser(values);
 
     if (result.success) {

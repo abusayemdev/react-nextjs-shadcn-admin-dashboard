@@ -7,6 +7,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
+import Link from "next/link"
 
 type BreadcrumbItemType = {
   label: string
@@ -25,11 +26,11 @@ const AppBreadcrumb = ({ items }: AppBreadcrumbProps) => {
           const isLast = index === items.length - 1
 
           return (
-            <BreadcrumbItem key={item.href ?? item.label}>
+            <BreadcrumbItem key={item.href ?? `${item.label}-${index}`}>
               {isLast || !item.href ? (
                 <BreadcrumbPage>{item.label}</BreadcrumbPage>
               ) : (
-                <BreadcrumbLink render={<a href={item.href} />}>
+                <BreadcrumbLink render={<Link href={item.href} />}>
                   {item.label}
                 </BreadcrumbLink>
               )}

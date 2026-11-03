@@ -43,11 +43,14 @@ const userFields: FieldConfig[] = [
 
 
 
-export function EditUserForm({ initialData }: { initialData: NewUser }) {
+export function EditUserForm({ userId, initialData } : {
+  userId: string;
+  initialData: UpdateUserInput;
+}) {
   const router = useRouter();
 
   const onSubmit = async (values: UpdateUserInput) => {
-    const result = await updateUser(initialData.id, values);
+    const result = await updateUser(userId, values);
 
     if (result.success) {
       router.push("/admin/users");
@@ -55,6 +58,7 @@ export function EditUserForm({ initialData }: { initialData: NewUser }) {
     } else {
       alert(result.message);
     }
+    
   };
 
   return (
