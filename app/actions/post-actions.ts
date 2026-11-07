@@ -57,9 +57,8 @@ export async function createPost(formData: FormData) {
       .returning();
 
     //revalidate the homepage to get the latest posts
-    revalidatePath("/");
-    revalidatePath(`/post/${slug}`);
-    revalidatePath("/profile");
+    revalidatePath("/posts");
+    revalidatePath(`/posts/${slug}`);
 
     return {
       success: true,
@@ -130,9 +129,8 @@ export async function updatePost(postId: number, formData: FormData) {
       })
       .where(eq(posts.id, postId));
 
-    revalidatePath("/");
-    revalidatePath(`/post/${slug}`);
-    revalidatePath("/profile");
+    revalidatePath("/posts");
+    revalidatePath(`/posts/${slug}`);
 
     return {
       success: true,
@@ -181,8 +179,7 @@ export async function deletePost(postId: number) {
 
     await db.delete(posts).where(eq(posts.id, postId));
 
-    revalidatePath("/");
-    revalidatePath("/profile");
+    revalidatePath("/admin/posts");
 
     return {
       success: true,

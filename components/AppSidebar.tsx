@@ -8,8 +8,8 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from './ui/collap
 
 const items = [
   {
-    title: "Home",
-    url: "/",
+    title: "Dashboard",
+    url: "/admin/dashboard",
     icon: Home,
   },
   {
@@ -32,7 +32,7 @@ const AppSidebar = () => {
       <SidebarHeader className='py-4'>
         <SidebarMenu>
           <SidebarMenuButton render={
-            <Link href="/"> <Image src="/globe.svg" alt='logo' width={20} height={20}/> <span>Admin Dashboard</span> </Link>
+            <Link href="/admin/dashboard"> <Image src="/globe.svg" alt='logo' width={20} height={20}/> <span>Admin LLC</span> </Link>
           }>
 
           </SidebarMenuButton>
@@ -78,14 +78,14 @@ const AppSidebar = () => {
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton render={
-                  <Link href="/admin/users"> <Projector /> Account </Link>
+                  <Link href="/admin/profile"> <Projector /> Account </Link>
                 }>
 
                 </SidebarMenuButton>
                 <SidebarMenuSub>
                   <SidebarMenuSubItem>
                     <SidebarMenuSubButton render={
-                      <Link href="/admin/users/name"> Profile </Link>
+                      <Link href="/admin/profile"> Profile </Link>
                     }>
 
                     </SidebarMenuSubButton>

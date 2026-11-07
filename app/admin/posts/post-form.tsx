@@ -85,7 +85,7 @@ function PostForm({ isEditing, post }: PostFormProps) {
             isEditing ? "Post edited successfully" : "Post created successfully"
           );
           router.refresh();
-          router.push("/");
+          router.push("/admin/posts");
         } else {
           toast(res.message);
         }
